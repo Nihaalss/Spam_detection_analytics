@@ -65,7 +65,26 @@ Performed visual analysis using Seaborn and Matplotlib:
 
 ## 🧪 Custom Validation
 
-You can input your own message and the model will predict whether it's spam or ham:
-
-```python
+# Example input
 new_message = "You've won a free ticket to Goa. Text WON to claim."
+
+# Preprocessing function
+def preprocess_message(message, vectorizer):
+    import re
+    message_cleaned = re.sub('[^a-zA-Z]', ' ', message).lower()
+    message_cleaned = ' '.join(message_cleaned.split())
+    return vectorizer.transform([message_cleaned]).toarray()
+
+# Make sure you already trained the vectorizer and model like this:
+# tfidf_vectorizer = TfidfVectorizer(stop_words='english', max_features=5000)
+# X = tfidf_vectorizer.fit_transform(df2['cleaned_text']).toarray()
+# svm = SVC(kernel='linear', random_state=42)
+# svm.fit(X_train, y_train)
+
+# Vectorize and predict
+new_message_vectorized = preprocess_message(new_message, tfidf_vectorizer)
+prediction = svm.predict(new_message_vectorized)
+result = 'Spam' if prediction[0] == 1 else 'Ham'
+
+print(f"The message is classified as: {result}")
+
